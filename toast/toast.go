@@ -1,3 +1,61 @@
+// Package toast provides a fluent API for building toast notifications.
+//
+// Toast notifications are server-driven messages displayed to users via the
+// frontend event system. They integrate seamlessly with the hxevents package
+// and handler.Context.
+//
+// # Quick Start
+//
+//	func MyHandler(ctx *handler.Context) error {
+//	    ctx.Toast("User created successfully").Success().Notify()
+//	    return ctx.Render(page())
+//	}
+//
+// # Fluent API
+//
+// Build toasts with method chaining:
+//
+//	toast.New("Message", ctx).
+//	    Success().           // or Error(), Warning(), Info()
+//	    SetTimeout(5000).    // milliseconds
+//	    SetPosition("top-right").
+//	    Notify()
+//
+// # Toast Levels
+//
+//   - Success: Green checkmark (for completed actions)
+//   - Error: Red X (for failures)
+//   - Warning: Orange triangle (for warnings)
+//   - Info: Blue info icon (for informational messages, default)
+//
+// # Timeout
+//
+// Default timeout is 3 seconds (3000ms). Use:
+//   - SetTimeout(ms) for custom duration
+//   - Stay() for persistent toasts (no auto-dismiss)
+//
+// # Position
+//
+// Default position is "bottom-right". Options:
+//   - bottom-right (default)
+//   - top-right
+//   - bottom-left
+//   - top-left
+//
+// # Event Integration
+//
+// Toast.Notify() emits a "toast" event via the EventEmitter interface.
+// When used with handler.Context, events are automatically committed
+// as HX-Trigger headers or initial-events scripts.
+//
+// # Icons
+//
+// Use GetIcon(level) to retrieve SVG icons for toast levels.
+// Icons are defined in icons.go and match the color scheme in base.css.
+//
+// # Dependencies
+//
+// None - uses EventEmitter interface to avoid import cycles.
 package toast
 
 // EventEmitter is the interface for emitting events (avoids import cycle with handler package).

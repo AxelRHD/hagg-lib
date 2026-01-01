@@ -1,3 +1,40 @@
+// Package handler provides a custom context wrapper for Chi-based handlers.
+//
+// The handler package replaces gin.Context with a minimal, framework-agnostic
+// abstraction over HTTP request/response. It provides automatic error handling,
+// event commitment, and integration with the hxevents and toast packages.
+//
+// # Handler Pattern
+//
+// Handlers take a *Context parameter and return an error:
+//
+//	func MyHandler(ctx *handler.Context) error {
+//	    // Access request
+//	    id := chi.URLParam(ctx.Req, "id")
+//
+//	    // Emit events
+//	    ctx.Event("custom-event", data)
+//	    ctx.Toast("Success!").Success().Notify()
+//
+//	    // Render
+//	    return ctx.Render(myPage())
+//	}
+//
+// # Wrapper
+//
+// Use handler.Wrapper to convert handler.Context handlers to http.HandlerFunc:
+//
+//	wrapper := handler.NewWrapper(slog.Default())
+//	r.Get("/", wrapper.Wrap(MyHandler))
+//
+// The wrapper automatically:
+//   - Creates the Context with request/response
+//   - Handles errors (logs and returns 500)
+//   - Commits accumulated events via HX-Trigger headers
+//
+// # Dependencies
+//
+// Requires: stdlib (net/http, log/slog), gomponents
 package handler
 
 import (
