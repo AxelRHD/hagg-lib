@@ -6,7 +6,7 @@ This file provides guidance to Claude Code when working with hagg-lib.
 
 **hagg-lib** is a reusable library providing Chi-compatible building blocks for server-side rendered Go web applications using the HAGG stack (HTMX + Alpine.js + Gomponents + Go).
 
-**Status:** Phase 2 Complete - Gin → Chi migration finished.
+**Status:** Phase 4 Complete - Gin fully removed, clean API.
 
 ## Package Structure
 
@@ -30,22 +30,16 @@ This file provides guidance to Claude Code when working with hagg-lib.
 - Timeout and position control
 - Integrates with event system via EventEmitter interface
 
-**middleware/** - Chi middleware
-- `basepath_chi.go` - Base path injection for Chi
+**middleware/** - HTTP middleware
+- `basepath.go` - Base path injection for reverse proxy support
 
 **view/** - View helpers
-- `chi.go` - Chi-compatible URL helpers
+- `url.go` - BasePath-aware URL helpers (`URLString`)
 
 ### Framework-Independent
 
 **ctxkeys/** - Context key constants
 **casbinx/** - Casbin authorization helpers
-
-### Deprecated (Will Remove in Phase 4)
-
-- **flash/** - Gin-sessions based (use SCS directly instead)
-- **middleware/basepath.go**, **hxtriggers.go** - Gin versions
-- **view/render.go**, **links.go** - Gin helpers
 
 ## Development Guidelines
 
@@ -98,14 +92,9 @@ type EventEmitter interface {
 
 ## Dependencies
 
-**Core:**
 - stdlib (net/http, encoding/json, context)
 - maragu.dev/gomponents (HTML rendering)
 - github.com/casbin/casbin/v2 (authorization)
-
-**Deprecated (will remove):**
-- github.com/gin-gonic/gin
-- github.com/gin-contrib/sessions
 
 ## Testing
 
@@ -114,7 +103,7 @@ type EventEmitter interface {
 ## Versioning
 
 Currently using replace directive for local development.
-Target: v1.0.0 release after Phase 4 cleanup (remove all Gin code).
+Ready for v1.0.0 release - Gin fully removed, clean API.
 
 ## Critical Files
 
