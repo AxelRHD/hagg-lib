@@ -51,7 +51,8 @@ Fluent toast notification builder.
 ### Utilities (Chi-Compatible)
 
 #### **middleware/** - Chi Middleware
-- `basepath_chi.go` - Base path injection for Chi
+- `basepath.go` - Base path injection for reverse proxy support
+- `secure.go` - Security headers (recommended for all deployments)
 
 #### **view/** - View Helpers
 - `chi.go` - Chi-compatible URL helpers (basePath-aware)

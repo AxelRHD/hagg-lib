@@ -32,6 +32,7 @@ This file provides guidance to Claude Code when working with hagg-lib.
 
 **middleware/** - HTTP middleware
 - `basepath.go` - Base path injection for reverse proxy support
+- `secure.go` - Security headers (X-Frame-Options, X-Content-Type-Options, etc.)
 
 **view/** - View helpers
 - `url.go` - BasePath-aware URL helpers (`URLString`)
