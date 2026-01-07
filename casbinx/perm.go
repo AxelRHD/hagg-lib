@@ -44,3 +44,39 @@ func (p *Perm) CanAll(sub string, actions ...string) bool {
 	}
 	return true
 }
+
+// GetRolesForUser gibt alle Rollen zurück, die einem User zugewiesen sind.
+func (p *Perm) GetRolesForUser(user string) []string {
+	roles, err := p.enforcer.GetRolesForUser(user)
+	if err != nil {
+		return nil
+	}
+	return roles
+}
+
+// GetAllSubjects gibt alle Subjects (User) aus der Policy zurück.
+func (p *Perm) GetAllSubjects() []string {
+	subjects, err := p.enforcer.GetAllSubjects()
+	if err != nil {
+		return nil
+	}
+	return subjects
+}
+
+// GetPolicy gibt alle Policy-Regeln zurück.
+func (p *Perm) GetPolicy() [][]string {
+	policies, err := p.enforcer.GetPolicy()
+	if err != nil {
+		return nil
+	}
+	return policies
+}
+
+// GetGroupingPolicy gibt alle Rollen-Zuweisungen zurück.
+func (p *Perm) GetGroupingPolicy() [][]string {
+	grouping, err := p.enforcer.GetGroupingPolicy()
+	if err != nil {
+		return nil
+	}
+	return grouping
+}
