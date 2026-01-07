@@ -1,6 +1,7 @@
 package hxevents
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -60,7 +61,7 @@ func Commit(res http.ResponseWriter, req *http.Request, events []Event) error {
 			continue // Skip phases with no events
 		}
 
-		jsonData, err := json.Marshal(events)
+		jsonData, err := marshalASCIISafe(events)
 		if err != nil {
 			return fmt.Errorf("marshal events for %s: %w", phase, err)
 		}
@@ -69,4 +70,36 @@ func Commit(res http.ResponseWriter, req *http.Request, events []Event) error {
 	}
 
 	return nil
+}
+
+// marshalASCIISafe marshals data to JSON with non-ASCII characters escaped as \uXXXX.
+// This is required for HTTP headers which should only contain ASCII characters.
+func marshalASCIISafe(v any) ([]byte, error) {
+	// First, marshal normally
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+
+	// Escape non-ASCII characters by iterating over runes
+	var buf bytes.Buffer
+	str := string(data)
+	for _, r := range str {
+		if r > 127 {
+			// Non-ASCII rune - escape as \uXXXX
+			if r <= 0xFFFF {
+				fmt.Fprintf(&buf, "\\u%04x", r)
+			} else {
+				// Supplementary character - use surrogate pair
+				r -= 0x10000
+				high := 0xD800 + (r >> 10)
+				low := 0xDC00 + (r & 0x3FF)
+				fmt.Fprintf(&buf, "\\u%04x\\u%04x", high, low)
+			}
+		} else {
+			buf.WriteRune(r)
+		}
+	}
+
+	return buf.Bytes(), nil
 }
