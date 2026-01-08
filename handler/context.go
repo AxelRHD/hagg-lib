@@ -54,8 +54,9 @@ type Context struct {
 	Res http.ResponseWriter // Response writer (explicit field, no embedding)
 	Req *http.Request       // Request (explicit field, no embedding)
 
-	logger *slog.Logger // Structured logger
-	events []Event      // Event accumulator for frontend communication
+	logger          *slog.Logger // Structured logger
+	events          []Event      // Event accumulator for frontend communication
+	eventsCommitted bool         // Prevents double-commit of events
 }
 
 // Event represents a single event to be sent to the frontend.
@@ -66,9 +67,11 @@ type Event struct {
 }
 
 // Render renders a gomponents node to the HTTP response.
-// Sets Content-Type to text/html and writes the node's HTML output.
+// Sets Content-Type to text/html, commits events to HX-Trigger headers,
+// and writes the node's HTML output.
 func (c *Context) Render(node g.Node) error {
 	c.Res.Header().Set("Content-Type", "text/html; charset=utf-8")
+	c.commitEvents() // Must be before body write - HTTP headers come first!
 	return node.Render(c.Res)
 }
 
@@ -119,7 +122,13 @@ func (c *Context) NoContent() error {
 
 // commitEvents commits accumulated events to HX-Trigger headers.
 // This is called internally before writing response headers.
+// Safe to call multiple times - only commits once.
 func (c *Context) commitEvents() {
+	if c.eventsCommitted {
+		return // Already committed
+	}
+	c.eventsCommitted = true
+
 	// Convert handler.Event to hxevents.Event and add default phase prefix
 	hxEvents := make([]hxevents.Event, len(c.events))
 	for i, e := range c.events {
