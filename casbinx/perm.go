@@ -80,3 +80,9 @@ func (p *Perm) GetGroupingPolicy() [][]string {
 	}
 	return grouping
 }
+
+// Reload lädt die Policy-Datei neu.
+// Nützlich wenn die policy.csv zur Laufzeit geändert wurde.
+func (p *Perm) Reload() error {
+	return p.enforcer.LoadPolicy()
+}
